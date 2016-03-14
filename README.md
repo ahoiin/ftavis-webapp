@@ -1,5 +1,5 @@
 # FTAVis – webapp and data parsing
-FTAVis ([www.ftavis.com](www.ftavis.com)) is a tool to make the complexity of the world’s trade agreements visible, accessible and understandable. The project visualizes 789 trade agreements from 205 countries over the last 66 years.
+FTAVis ([www.ftavis.com](http://www.ftavis.com)) is a tool to make the complexity of the world’s trade agreements visible, accessible and understandable. The project visualizes 789 trade agreements from 205 countries over the last 66 years.
 
 [Read the making of story](https://medium.com/@ahoiin/crafting-a-custom-mobile-friendly-data-visualization-cb91a3024064#.cbgadey8u
 )
