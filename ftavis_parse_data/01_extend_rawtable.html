@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>parsing data</title>
+</head>
+<body></body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+
+// edit table date: remove null values and sort after years
+// merge with depth table
+$.post( "input/01_raw_data_tas.json", function(data) {
+	extendData(data);
+});
+
+
+function extendData(data) {
+	$.post( "input/01_raw_data_depth.json", function( depth ) {
+
+		$.each( depth, function( a,b ) {
+			$.each(data, function( c,d ) {
+				if(d.NumberSimple == b.NumberSimple) d.depth_index = b.depth_index;
+			});
+		});
+
+		treaties(data);
+	});
+}
+
+function treaties(data) {
+
+	var data_new = [];
+	$.each( data, function( c, d ) {
+
+		var b = {};
+		// remove all nulls
+		$.each( d, function( e, f ) {
+			if(f != null || e == "depth_index" || e == "3rdCountryCode_1st" || e == "WTODateNotification") b[e] = f;
+		});
+
+		// check if agreement is with eu
+		var s = d.Name.toLowerCase().split(' ');
+		var eu = false;
+		$.each( s, function( e, f ) {
+			if(f == "ec") eu = true;
+			else if(eu==false) eu = false;
+		});
+		b.eu = eu;
+
+
+		// group data by year
+		var found = -1;
+		for (var i=0; i<data_new.length; i++) {
+		    if (data_new[i].year == b.Year) {
+		        found = i;
+		        break;
+		    }
+		}
+		if(found!=-1) {
+			data_new[found].data.push(b);
+		}
+		else {
+			var json= {};
+			json.year = b.Year;
+			json.data = [b];
+			data_new.push(json);
+		}
+
+	});
+	// sort after year
+	data_new.sort(function(a, b){return a.year-b.year});
+
+
+	console.log(JSON.stringify(data_new));
+	// save in output/01.json
+
+}
+
+
+</script>
+</html>

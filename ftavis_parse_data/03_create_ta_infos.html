@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>parsing data</title>
+</head>
+<body></body>
+<script src="./jquery.min.js"></script>
+<script>
+
+var countries = [], index = [];
+
+function getCountries() {
+	$.post( "input_fixed/02_country-continent-codes.json", function( data ) {
+		countries = data;
+		$.post( "input/03_index.json", function( index_ ) {
+			index = index_;
+			makeNodes();
+		});
+	});
+}
+
+function makeNodes() {
+	$.post( "output/01.json", function( data ) {
+		var data_all = [];
+
+		$.each( data, function( g, e ) {
+			$.each( e.data, function( i, d ) {
+				var json = {};
+
+				json.id = d.NumberSimple;
+				json.name = (d.WTO_Name != "") ? d.WTO_Name: d.Name; //take wto name if available
+				json.year = d.Year;
+				json.depth = (typeof d.depth_index!= "undefined") ? d.depth_index : null;
+				json.type = d.TypeMemb;
+				json.pa_count = 0;
+				json.reason = [];
+
+				$.each(d, function( a,b ) {
+					// console.log(a,b);
+					if(a.charAt(0) == 'c') {
+						// json.pa.push(b);
+						json.pa_count++;
+					}
+				});
+
+				// get country names and all countries used
+				$.each(countries, function( l, countryName ) {
+					if(json.ini == countryName.number) {
+						json.ini =  countryName.continent_code + '.' + countryName.name;
+					}
+				});
+
+				// get the reason for the depth if available
+				$.each(index, function( a,b ) {
+					if(d.NumberSimple == b.number) {
+						if(b.full_fta == 1) json.reason.push(0);
+						if(b.iprs == 1) json.reason.push(1);
+						if(b.procurement == 1) json.reason.push(2);
+						if(b.standards == 1) json.reason.push(3);
+						if(b.services == 1) json.reason.push(4);
+						if(b.investments == 1) json.reason.push(5);
+						if(b.competition == 1) json.reason.push(6);
+					}
+				});
+
+
+				data_all.push(json);
+
+			});
+		});
+
+		// sort after year
+		data_all.sort(function(a, b){return a.id-b.id});
+
+		console.log(JSON.stringify(data_all));
+		// save in output/data_tas.json
+	});
+
+}
+
+getCountries();
+
+</script>
+</html>

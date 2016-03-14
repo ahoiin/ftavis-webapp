@@ -1,0 +1,215 @@
+svg g:hover {
+  cursor: pointer; }
+
+#container text {
+  font: 400 9px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  fill: #648294;
+  letter-spacing: 0.1px;
+  text-rendering: geometricPrecision;
+  cursor: pointer; }
+  @media (max-width: 64em) {
+    #container text {
+      font: 400 8px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif; } }
+  #container text:hover {
+    fill: #000;
+    font-weight: 400;
+    cursor: pointer; }
+#container .legend_container text, #container .legend_container > * {
+  fill: #628085; }
+#container #legend_connections g:hover {
+  cursor: pointer; }
+#container .node text.label {
+  fill: #000;
+  opacity: 0; }
+#container .node text.labelBg {
+  fill: transparent;
+  stroke: #ffffff;
+  stroke-width: 2px;
+  stroke-opacity: 0.8;
+  opacity: 0; }
+  #container .node text.labelBg.active {
+    stroke: #ffffff !important; }
+#container .node.show text.label {
+  opacity: 1; }
+#container .node.show text.labelBg {
+  opacity: 1; }
+#container .node.show circle {
+  stroke: #000;
+  stroke-width: 0.5px;
+  stroke-opacity: 1; }
+#container .node.node--active text {
+  fill: #333; }
+#container .node.node--active text.label {
+  opacity: 1; }
+#container .node.node--active text.labelBg {
+  opacity: 1; }
+#container .node.node--active circle {
+  stroke-opacity: 1; }
+#container .node.show.fadeOut text.label, #container .node.show.node--active.fadeOut text.label {
+  opacity: 0.1; }
+#container .node.show.fadeOut text.labelBg, #container .node.show.node--active.fadeOut text.labelBg {
+  opacity: 0.1; }
+#container .node.show.fadeOut circle, #container .node.show.node--active.fadeOut circle {
+  stroke-opacity: 0.2; }
+#container .node.node--source text, #container .node.show.node--source.fadeOut text {
+  fill: #000;
+  font-weight: 700;
+  font-size: 9px; }
+#container .node.hide text.label, #container .node.hide.show text.label, #container .node.hide.show.fadeOut text.label {
+  opacity: 0 !important; }
+#container .node.hide text.labelBg, #container .node.hide.show text.labelBg, #container .node.hide.show.fadeOut text.labelBg {
+  opacity: 0 !important; }
+#container .node.hide text.label:hover, #container .node.hide text.labelBg:hover, #container .node.hide.show text.label:hover, #container .node.hide.show text.labelBg:hover, #container .node.hide.show.fadeOut text.label:hover, #container .node.hide.show.fadeOut text.labelBg:hover {
+  opacity: 1 !important; }
+#container .node.hide circle, #container .node.hide.show circle, #container .node.hide.show.fadeOut circle {
+  stroke-opacity: 0.2 !important; }
+#container .node.node--active.fadeOut text.label {
+  opacity: 0; }
+#container .node.node--active.fadeOut text.labelBg {
+  opacity: 0; }
+#container .node.node--active.fadeOut circle {
+  stroke-opacity: 0.2; }
+#container .node.node--source.node--active.fadeOut text {
+  opacity: 1 !important; }
+#container .node.node--source.node--active.fadeOut circle {
+  stroke-opacity: 1; }
+#container rect:hover {
+  cursor: pointer !important; }
+#container circle {
+  stroke: #333;
+  stroke-width: 0.5px;
+  stroke-opacity: 0.2;
+  fill-opacity: 0; }
+  #container circle:hover {
+    cursor: pointer; }
+#container .circleBG {
+  fill: #ffffff;
+  stroke: #A6ABAB;
+  stroke-width: 0.2px;
+  stroke-opacity: 1;
+  fill-opacity: 1; }
+#container .vis path {
+  stroke: white;
+  fill: none;
+  pointer-events: none;
+  stroke-width: 0.3px; }
+#container .node text.label, #container .node text.labelBg {
+  -webkit-transition: all 400ms ease;
+  -moz-transition: all 400ms ease;
+  -ms-transition: all 400ms ease;
+  -o-transition: all 400ms ease;
+  transition: all 400ms ease;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  -moz-perspective: 1000;
+  -ms-perspective: 1000;
+  perspective: 1000; }
+#container canvas.fadeOut, #container img.fadeOut, #container .legend_de.fadeOut, #container .legend_co.fadeOut, #container #legend_container.fadeOut {
+  opacity: 0.1; }
+#container canvas.hide, #container img.hide {
+  opacity: 0; }
+#container .continents text {
+  font-size: 9px;
+  fill: #999;
+  letter-spacing: 0.6px;
+  font-weight: 300; }
+  #container .continents text:hover {
+    fill: #000;
+    font-weight: 400; }
+#container .continents .pathContinent {
+  stroke: none;
+  stroke-width: 0px;
+  stroke-opacity: 0;
+  fill: none; }
+
+#sidebar {
+  color: #758385; }
+  #sidebar .axis path, #sidebar .axis line {
+    fill: none;
+    stroke: #d6d8d8;
+    stroke-dasharray: 1;
+    shape-rendering: crispEdges;
+    stroke-width: 1px; }
+  #sidebar .y.axis path, #sidebar .grid path, #sidebar .y.axis line {
+    display: none; }
+  #sidebar .y.axis .tick:nth-child(1) {
+    display: none; }
+  #sidebar .grid .tick {
+    stroke: #d8dede;
+    stroke-width: 0.5; }
+  #sidebar .x.axis .tick:nth-child(1) text {
+    text-anchor: start !important; }
+  #sidebar .x.axis .tick:nth-child(2) text {
+    text-anchor: end !important; }
+  #sidebar .bar {
+    fill: #adb2b5;
+    fill-opacity: 0.7;
+    -webkit-transition: all 300ms ease;
+    -moz-transition: all 300ms ease;
+    -ms-transition: all 300ms ease;
+    -o-transition: all 300ms ease;
+    transition: all 300ms ease;
+    pointer-events: all; }
+    #sidebar .bar.selected {
+      fill: #628085; }
+  #sidebar .bar:hover {
+    fill: #c6cbd0;
+    fill-opacity: 0.7;
+    cursor: pointer; }
+  #sidebar circle {
+    stroke: #777;
+    stroke-width: 1px;
+    stroke-opacity: 1;
+    fill: none; }
+  #sidebar text {
+    font: 300 12px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    fill: #628085;
+    text-rendering: optimizeLegibility;
+    cursor: default; }
+
+#taVis rect {
+  stroke: #ffffff;
+  stroke-width: 0.1px; }
+
+.d3-tip {
+  line-height: 1;
+  font-size: 1.1em;
+  line-height: 100%;
+  color: #333;
+  pointer-events: none;
+  z-index: 100000; }
+  .d3-tip .name, .d3-tip .value {
+    font: 400 14px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #758385;
+    text-rendering: optimizeLegibility;
+    cursor: default;
+    position: absolute;
+    z-index: 1; }
+  .d3-tip .name {
+    text-transform: uppercase;
+    bottom: 0px; }
+  .d3-tip .value {
+    display: block;
+    font-size: 20px;
+    bottom: 13px; }
+  .d3-tip .shadow_back {
+    color: white;
+    text-shadow: -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white, 1px 1px 0px white;
+    z-index: 0; }
+
+.progress-meter .background {
+  fill: #ffffff; }
+
+.progress-meter .foreground {
+  fill: #648294; }
+
+.progress-meter text {
+  font: 200 22px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  fill: #648294;
+  letter-spacing: 1px;
+  line-height: 150%; }
+
+/*# sourceMappingURL=04_vis.css.map */

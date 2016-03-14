@@ -1,0 +1,134 @@
+[
+  {
+    "name": "NA.Anguilla"
+  },
+  {
+    "name": "NA.Netherlands Antilles"
+  },
+  {
+    "name": "AN.Antarctica"
+  },
+  {
+    "name": "OC.American Samoa"
+  },
+  {
+    "name": "NA.Aruba"
+  },
+  {
+    "name": "EU.Åland"
+  },
+  {
+    "name": "NA.Saint Barthélemy"
+  },
+  {
+    "name": "NA.Bermuda"
+  },
+  {
+    "name": "AN.Bouvet Island"
+  },
+  {
+    "name": "AS.Cocos (Keeling) Islands"
+  },
+  {
+    "name": "AS.Christmas Island"
+  },
+  {
+    "name": "SA.Falkland Islands"
+  },
+  {
+    "name": "SA.French Guiana"
+  },
+  {
+    "name": "EU.Guernsey"
+  },
+  {
+    "name": "EU.Gibraltar"
+  },
+  {
+    "name": "NA.Guadeloupe"
+  },
+  {
+    "name": "AN.South Georgia and South Sandwich Islands"
+  },
+  {
+    "name": "OC.Guam"
+  },
+  {
+    "name": "AN.Heard and McDonald Islands"
+  },
+  {
+    "name": "EU.Isle of Man"
+  },
+  {
+    "name": "AS.British Indian Ocean Territory"
+  },
+  {
+    "name": "EU.Jersey"
+  },
+  {
+    "name": "NA.Saint Martin (French part)"
+  },
+  {
+    "name": "OC.Northern Mariana Islands"
+  },
+  {
+    "name": "NA.Martinique"
+  },
+  {
+    "name": "OC.New Caledonia"
+  },
+  {
+    "name": "OC.Norfolk Island"
+  },
+  {
+    "name": "OC.French Polynesia"
+  },
+  {
+    "name": "NA.Saint Pierre and Miquelon"
+  },
+  {
+    "name": "OC.Pitcairn"
+  },
+  {
+    "name": "NA.Puerto Rico"
+  },
+  {
+    "name": "AF.Reunion"
+  },
+  {
+    "name": "AF.Saint Helena"
+  },
+  {
+    "name": "EU.Svalbard and Jan Mayen Islands"
+  },
+  {
+    "name": "NA.Turks and Caicos Islands"
+  },
+  {
+    "name": "AN.French Southern Lands"
+  },
+  {
+    "name": "OC.Tokelau"
+  },
+  {
+    "name": "AS.Timor-Leste"
+  },
+  {
+    "name": "OC.United States Minor Outlying Islands"
+  },
+  {
+    "name": "EU.Vatican City"
+  },
+  {
+    "name": "NA.Virgin Islands, British"
+  },
+  {
+    "name": "NA.Virgin Islands, U.S."
+  },
+  {
+    "name": "OC.Wallis and Futuna Islands"
+  },
+  {
+    "name": "AF.Mayotte"
+  }
+]

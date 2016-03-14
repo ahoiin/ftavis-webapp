@@ -1,0 +1,329 @@
+@mixin breakpoint($point)
+  @if $point == desktop
+    @media (min-width: 70em)
+      @content
+  @else if $point == laptop
+    @media (min-width: 64em)
+      @content
+  @else if $point == tablet
+    @media (min-width: 50em)
+      @content
+  @else if $point == phablet
+    @media (max-width: 64em)
+      @content
+  @else if $point == mobileonly
+    @media (max-width: 37.5em)
+      @content
+
+svg g:hover
+  cursor: pointer
+
+#container
+  text
+    font: 400 9px "Source Sans Pro",  "Helvetica Neue", Helvetica, Arial, sans-serif
+    fill: #648294
+    letter-spacing: .1px
+    // text-transform: uppercase
+    text-rendering: geometricPrecision
+    cursor: pointer
+    @include breakpoint(phablet)
+      font: 400 8px "Source Sans Pro",  "Helvetica Neue", Helvetica, Arial, sans-serif
+    &:hover
+      fill: #000
+      font-weight: 400
+      cursor: pointer
+
+  .legend_container text, .legend_container > *
+    fill: #628085
+  #legend_connections g:hover
+    cursor: pointer
+
+
+
+  .node
+    // country label
+    text.label
+      fill: #000
+      opacity: 0
+
+    // country label
+    text.labelBg
+      fill: transparent
+      stroke: #ffffff
+      stroke-width: 2px
+      stroke-opacity: .8
+      opacity: 0
+      &.active
+        stroke: #ffffff !important
+
+    &.show
+      text.label
+        opacity: 1
+
+      text.labelBg
+        opacity: 1
+
+      circle
+        // fill-opacity: .8
+        stroke: #000
+        stroke-width: 0.5px
+        stroke-opacity: 1
+
+    &.node--active
+      text
+        fill: #333
+
+      text.label
+        opacity: 1
+
+      text.labelBg
+        opacity: 1
+
+      circle
+        stroke-opacity: 1
+
+    &.show.fadeOut, &.show.node--active.fadeOut
+      text.label
+        opacity: .1
+
+      text.labelBg
+        opacity: .1
+
+      circle
+        stroke-opacity: 0.2
+
+    &.node--source, &.show.node--source.fadeOut
+      text
+        fill: #000
+        font-weight: 700
+        font-size: 9px
+
+    &.hide, &.hide.show, &.hide.show.fadeOut
+      text.label
+        opacity: 0 !important
+
+      text.labelBg
+        opacity: 0 !important
+
+      text.label, text.labelBg
+        &:hover
+          opacity: 1 !important
+
+      circle
+        stroke-opacity: 0.2 !important
+
+    &.node--active.fadeOut
+      text.label
+        opacity: 0
+
+      text.labelBg
+        opacity: 0
+
+      circle
+        stroke-opacity: 0.2
+
+    &.node--source.node--active.fadeOut
+      text
+        opacity: 1 !important
+      circle
+        stroke-opacity: 1
+
+  // rect behind text
+  rect
+    &:hover
+      cursor: pointer !important
+
+
+  circle
+    stroke: #333
+    stroke-width: 0.5px
+    stroke-opacity: 0.2
+    fill-opacity: 0
+    &:hover
+      cursor: pointer
+
+  .circleBG
+    fill: #ffffff
+    stroke: #A6ABAB
+    stroke-width: 0.2px
+    stroke-opacity: 1
+    fill-opacity: 1
+
+  .vis path
+    stroke: white
+    //stroke-opacity: 0
+    fill: none
+    pointer-events: none
+    stroke-width: 0.3px
+
+    //shape-rendering: optimizeSpeed
+
+
+  // animations
+  .node text.label, .node text.labelBg
+    -webkit-transition: all 400ms ease
+    -moz-transition: all 400ms ease
+    -ms-transition: all 400ms ease
+    -o-transition: all 400ms ease
+    transition: all 400ms ease
+    -webkit-backface-visibility: hidden
+    -moz-backface-visibility: hidden
+    -ms-backface-visibility: hidden
+    backface-visibility: hidden
+
+    -webkit-perspective: 1000
+    -moz-perspective: 1000
+    -ms-perspective: 1000
+    perspective: 1000
+
+
+  canvas.fadeOut, img.fadeOut, .legend_de.fadeOut, .legend_co.fadeOut, #legend_container.fadeOut
+    opacity: .1
+  canvas.hide, img.hide
+    opacity: 0
+  // .show !important
+  //   opacity: 1 !important
+
+
+
+
+
+
+
+
+  .continents
+    text
+      font-size: 9px
+      fill: #999
+      letter-spacing: .6px
+      font-weight: 300
+      &:hover
+        fill: #000
+        font-weight: 400
+
+    .pathContinent
+      stroke: none
+      stroke-width: 0px
+      stroke-opacity: 0
+      fill: none
+    //.pathContinentBack
+    //  stroke: #ffffff
+    //  stroke-width: 7px
+    //  stroke-opacity: 1
+
+
+
+
+
+// line charts
+#sidebar
+  color: #758385
+  .axis path, .axis line
+    fill: none
+    stroke: #d6d8d8
+    stroke-dasharray: 1
+    shape-rendering: crispEdges
+    stroke-width: 1px
+
+  .y.axis path, .grid path, .y.axis line
+    display: none
+
+  .y.axis .tick:nth-child(1)
+    display: none
+
+  .grid .tick
+    stroke: #d8dede
+    stroke-width: .5
+
+  .x.axis
+    .tick:nth-child(1) text
+      text-anchor: start !important
+    .tick:nth-child(2) text
+      text-anchor: end !important
+  .bar
+    fill: #adb2b5
+    fill-opacity: .7
+    -webkit-transition: all 300ms ease
+    -moz-transition: all 300ms ease
+    -ms-transition: all 300ms ease
+    -o-transition: all 300ms ease
+    transition: all 300ms ease
+    pointer-events: all
+    &.selected
+      fill: #628085
+
+
+  .bar:hover
+    fill: #c6cbd0
+    fill-opacity: .7
+    cursor: pointer
+
+
+  circle
+    stroke: #777
+    stroke-width: 1px
+    stroke-opacity: 1
+    fill: none
+
+  text
+    font: 300 12px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif
+    fill: #628085
+    text-rendering: optimizeLegibility
+    //letter-spacing: 0.1em
+    cursor: default
+
+
+#taVis rect
+  stroke: #ffffff
+  stroke-width: .1px
+
+
+.d3-tip
+  line-height: 1
+  font-size: 1.1em
+  line-height: 100%
+  color: #333
+  // border-radius: 2px
+  pointer-events: none
+  z-index: 100000
+  // -webkit-text-stroke: 1px white
+
+  // text-shadow: 0 0 5px white
+  .name, .value
+    font: 400 14px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif
+    color: #758385
+    text-rendering: optimizeLegibility
+    // letter-spacing: 0.1em
+    cursor: default
+    position: absolute
+    z-index: 1
+
+  .name
+    text-transform: uppercase
+    bottom: 0px
+
+  .value
+    display: block
+    font-size: 20px
+    bottom: 13px
+
+  .shadow_back
+    color: white
+    text-shadow: -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white, 1px 1px 0px white
+    z-index: 0
+
+
+.progress-meter .background
+  fill: #ffffff
+
+.progress-meter .foreground
+  fill: #648294
+
+.progress-meter text
+  font: 200 22px "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif
+  fill: #648294
+  letter-spacing: 1px
+  line-height: 150%
+
+
+

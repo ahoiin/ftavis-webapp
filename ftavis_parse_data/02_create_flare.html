@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>parsing data</title>
+</head>
+<body></body>
+<script src="jquery.min.js"></script>
+<script>
+
+var countries = [];
+var countriesNoFTAs = [];
+
+function ascending( a, b ) {
+    return a - b;
+}
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
+var agr_with_eu = [];
+var all_empty_c = [];
+
+function getCountries() {
+	$.getJSON( "input_fixed/02_country-continent-codes_with_EU_accession.json", function( data ) {
+		countries = data;
+		all_empty_c = countries.slice();
+		$.getJSON( "input/02_noftas.json", function( noftas ) {
+			countriesNoFTAs = noftas;
+			makeNodes();
+		});
+	});
+}
+
+function makeNodes() {
+	$.post( "./output/01.json", function( data ) {
+
+		var data_all = [];
+
+		$.each( data, function( j, l ) {
+			var json_item = {};
+			json_item.year = l.year;
+
+
+			var links_bundled = [];
+			var ids_memb_three = [];
+
+			$.each( l.data, function( i, d ) {
+
+				var ftaID = d.NumberSimple;
+				var depth_index = d.depth_index;
+				var dataCount = i + 1;
+				// if ta is with eu save id for later
+				if(d.eu!=false) agr_with_eu.push(ftaID);
+
+				// get all countries
+				var c = [];
+				$.each(d, function( j, val ) {
+					if(j.charAt(0) == "c" && val != null ) c.push(val); //country
+				});
+
+				// create all connections
+				var links_all = [];
+
+
+				if(d.TypeMemb == 1 || d.TypeMemb == 2 || d.TypeMemb == 4) { // 1 (bilateral) : 1:1 // 2 (plurilateral): n:n // 4 (region-region): n:n
+
+					$.each(c, function( h, j ) {
+						$.each(c, function( l, m ) {
+							if((m&&j)) links_all.push([j,m]);  // n:n
+							//.sort( ascending )
+						});
+					});
+			   }
+				else if(d.TypeMemb == 3) { // 3 (plurilateral & third country)  1:n
+					//save id for later processing
+					ids_memb_three.push(ftaID);
+
+					var third_c = d["3rdCountryCode_1st"];
+					$.each(c, function( n, o ) {
+						// if m and d are not null and m is not d, add to links_bundleday
+						if(o && o!=third_c) {
+							links_all.push([third_c,o]); // 1:n
+							links_all.push([o,third_c]); // n:1
+						}
+					});
+			  }
+
+
+				//bundle links
+				$.each(links_all, function( i, f ) {
+					// check if an object in links_bundled with name of first element exist, otherwise create it
+					var found = -1;
+					for (var i=0; i<links_bundled.length; i++) {
+					    if (links_bundled[i].name == f[0]) {
+					        found = i;
+					        break;
+					    }
+					}
+					// n:n
+					if(found!=-1) {
+						var foundFTA = -1;
+						for (var i=0; i<links_bundled[found].imports.length; i++) {
+						    if (links_bundled[found].imports[i].id == ftaID) {
+						        foundFTA = i;
+						        break;
+						    }
+						}
+						if(foundFTA!=-1) {
+
+							links_bundled[found].imports[foundFTA].imports.push(f[1]);
+							links_bundled[found].connections_new_count++;
+						}
+						else {
+							var json_ = {};
+							json_.id = ftaID;
+							json_.depth = depth_index;
+							json_.imports = [];
+							// if(f[1]==null) console.log('s');
+							json_.imports.push(f[1]);
+
+							// increment number of countrys
+							links_bundled[found].connections_new_count++;
+
+							// add fta id to array
+							links_bundled[found].ftas_new.push(ftaID);
+							links_bundled[found].ftas_new_count++;
+
+							// add new depth average value, for average calculation later
+							if(depth_index!=null) links_bundled[found].depth_new_total += depth_index;
+
+							// increment depth average total count for later calculation
+							if(depth_index!=null) links_bundled[found].depth_new_count++;
+
+							// add new data to imports array
+
+							links_bundled[found].imports.push(json_);
+						}
+					}
+					else {
+						var json = {};
+						json.name = f[0];
+						json.connections_new_count = 0;
+						json.connections_total_count = 0;
+						json.ftas_total_count = 0;
+						json.ftas_new_count = 1;
+						json.ftas_total = [];
+						json.ftas_new = [];
+						json.ftas_new.push(ftaID);
+						json.depth_average = null;
+						json.depth_average_total = null;
+						json.depth_new_total = depth_index;
+						json.depth_average_total_count = 0;
+						json.depth_new_count = 0;
+						if(depth_index!=null) json.depth_new_count = 1;
+						else json.depth_new_count = null;
+						json.imports = [];
+
+						var json_ = {};
+						json_.id = ftaID;
+						json_.depth = depth_index;
+
+						json_.imports = [];
+						json_.imports.push(f[1]);
+
+						json.imports.push(json_);
+						links_bundled.push(json);
+					}
+				});
+
+
+
+				$.each(countries, function( l, countryName ) {
+
+					$.each(links_bundled, function( i,j ) {
+
+						// find out name of linksnections
+						$.each(j.imports, function( o,p ) {
+							$.each(p.imports, function( l,n ) {
+								if(p.imports[l] == countryName.number) p.imports[l] = countryName.continent_code + '.' + countryName.name;
+							});
+						});
+						// find out id name
+						// if(j.name == countryName.number) j.name =  countryName.continent_code + '.' + countryName.name;
+					});
+				});
+
+
+			});
+
+
+			// js bug?
+			var countriesEmtpy = countries.slice();
+			var countriesToRemove = [];
+
+			// get country names and all countries used
+			$.each(countries, function( l, countryName ) {
+				$.each(links_bundled, function( i,j ) {
+
+					if(j.name == countryName.number) {
+						// find out id name
+						j.name =  countryName.continent_code + '.' + countryName.name;
+						// country exist so add to arr
+						countriesToRemove.push(countryName.number);
+
+						// if country joined eu this year, add all tas until this point from eu to this country
+					  if(json_item.year == parseInt(countryName.EU_accession)) {
+						// kind of a bug in the dataset, if country joined eu it should be added to the table for the agreement
+						j.ftas_new_count += agr_with_eu.length;
+					  }
+					}
+				});
+			});
+
+			//get all countries which have no ftas in this year
+			$.each(countriesToRemove, function( l, countryName ) {
+				$.each(countriesEmtpy, function( i,j ) {
+					if(j.number == countryName) {
+						countriesEmtpy.remove(i);
+						return false;
+					}
+				});
+			});
+
+
+
+			// $.each(countriesToRemove, function( l, countryName ) {
+			// 				$.each(all_empty_c , function( i,j ) {
+			// 					if(j.number == countryName) {
+			// 						all_empty_c.remove(i);
+			// 						return false;
+			// 					}
+			// 				});
+			// });
+
+
+			// create an array with all fta ids used
+			var links_bundledCur = [];
+
+			$.each(links_bundled, function( s,t ) {
+				$.each(t.imports, function( o,p ) {
+					var foundFTA = -1;
+					for (var i=0; i<links_bundledCur.length; i++) {
+					    if (links_bundledCur[i].id == p.id) {
+					        foundFTA = i;
+					        break;
+					    }
+					}
+					if(foundFTA==-1) links_bundledCur.push({id:p.id,val:-1});
+				});
+
+			});
+
+
+			// modifiy links bundled object
+			$.each(links_bundled, function( s,t ) {
+				$.each(t.imports, function( o,p ) {
+					$.each(links_bundled[s].imports[o].imports, function( q,r ) {
+						if(links_bundled[s].name == r) links_bundled[s].imports[o].imports.remove(q);
+					});
+					var cut = true;
+					$.each(links_bundledCur, function( u,v ) {
+						if(p.id == v.id)  {
+							v.val++;
+							val = v.val;
+						}
+					});
+					$.each(ids_memb_three, function( u,v ) {
+						if(p.id == v)  {
+							cut = false;
+						}
+					});
+					if(cut) links_bundled[s].imports[o].imports = links_bundled[s].imports[o].imports.splice(val, links_bundled[s].imports[o].imports.length);
+
+
+				});
+			});
+
+			var countryNoFTAs = [{}];
+
+
+
+			// add countries which have no ftas
+			$.each(countriesEmtpy, function( l, country) {
+				var name =  country.continent_code + '.' + country.name;
+				// dont't add if country has no ftas at all
+				var found = -1;
+				$.each(countriesNoFTAs, function( l, countryNoFTAs) {
+					if(countryNoFTAs.name == name) found = l;
+				});
+
+				if(found == -1) {
+					links_bundled.push({"name": name,"connections_total_count": 0,"connections_new_count": 0,"ftas_new": [], "ftas_new_count": 0, "ftas_total": [],"ftas_total_count": 0, "depth_average": null, "depth_average_new": null,"depth_average_total": null, "depth_new_total": null,"depth_new_count": 0, "depth_average_total_count": 0, "imports": []});
+				}
+
+			});
+
+
+			$.each(links_bundled, function( s,t ) {
+				//generall stuff: sum up values of connections
+				var connections_before = 0;
+				var fta_total_before = [];
+				var fta_new_before = 0;
+				var depth_average_before = 0;
+				var depth_average_total_count_before = 0;
+				var depth_average_total_before = null;
+				if(j>0) {
+					$.each(data_all[j-1].data, function( u,v) {
+						if(v.name == t.name) {
+							// connections_before = v.connections_total_count;
+							fta_total_before = v.ftas_total;
+							fta_new_before = v.ftas_total_count;
+							depth_average_before = (v.depth_average!=null) ? v.depth_average : 0;
+							depth_average_total_count_before = v.depth_average_total_count;
+							depth_average_total_before = (v.depth_average_total!=null) ? v.depth_average_total : 0;
+						}
+					});
+				}
+				// save all connections
+				// merge array of fta ids
+				t.ftas_total = fta_total_before.concat(t.ftas_new);
+				//save length for faster calculation later
+				// t.ftas_total_count = t.ftas_total.length;
+				t.ftas_total_count = t.ftas_new_count + fta_new_before;
+
+				// get total amount of average values (just because some countries have for some years no values, otherwise it would be j+1)
+				t.depth_average_total_count = t.depth_new_count + depth_average_total_count_before;
+
+				if(t.depth_new_count!=null) t.depth_average_new = Math.round((t.depth_new_total / t.depth_new_count)*100)/100;
+				else t.depth_average_new = null;
+
+				if(t.depth_new_count!=null) t.depth_average_total = t.depth_new_total + depth_average_total_before;
+				else t.depth_average_total = null
+
+				// calclate and save average depth index
+				if(t.depth_average_total!=null) t.depth_average = Math.round((t.depth_average_total / t.depth_average_total_count)*100)/100;
+				else t.depth_average = null;
+
+
+			});
+
+
+			json_item.data = links_bundled;
+			data_all.push(json_item);
+
+		});
+
+		var data_all_ = [];
+		//delete all unused data
+		$.each(data_all, function( a,b ) {
+			var json = {};
+			json.year = b.year;
+			json.data = [];
+
+			$.each(b.data, function( c,d ) {
+
+				var json_item = {};
+				json_item.name = d.name;
+				json_item.ta_total_arr = d.ftas_total;
+				json_item.imports = d.imports;
+
+				json.data.push(json_item);
+			});
+			data_all_.push(json);
+		});
+
+		// var all_empty_c_ = [];
+		// $.each(all_empty_c, function( a,b ) {
+		// 	all_empty_c_.push({name:b.continent_code + "." + b.name});
+		// });
+		// console.log(JSON.stringify(all_empty_c_));
+
+		console.log(JSON.stringify(data_all_));
+		// save in output/data.json
+	});
+}
+
+
+getCountries();
+
+
+</script>
+</html>

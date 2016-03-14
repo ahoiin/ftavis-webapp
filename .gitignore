@@ -1,0 +1,10 @@
+# Misc nodejs ignores
+node_modules
+npm-debug.log
+*~
+
+# npm package
+*.tgz
+
+# OSX
+.DS_Store
