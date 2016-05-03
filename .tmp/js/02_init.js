@@ -163,7 +163,9 @@ function init() {
 
   // check second time hash for country if everything is loaded
   if(typeof hash_[1] !== 'undefined') {
-    var s = getArrayPos(hash_[1], select_list_arr);
+    if(hash_[1].length == 2) var s = 500 + getArrayPos(hash_[1], select_list_arr_cont);
+    else var s = getArrayPos(hash_[1], select_list_arr);
+
     if(!isNaN(s)) {
       $('#e1').select2("val", s, true);
       //bug, so change hash again manually

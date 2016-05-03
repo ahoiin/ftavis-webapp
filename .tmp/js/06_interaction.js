@@ -19,6 +19,7 @@ function mouseoveredNode(d, status, extern) {
     // Hide all Nodes and Linkes
     if(viewStatus == 'current') {
       hideAllNodesLinksCurrent();
+      showAllContinents();
       if(currentCountry == 'Worldwide') {
         if(isSafari) d3.select("#lines_current_selected_img").classed("fadeOut",true);
         else d3.select("#lines_current_selected_canvas").classed("fadeOut",true);
@@ -30,13 +31,9 @@ function mouseoveredNode(d, status, extern) {
     }
 
 
-    if(status == 'click') {
-      if(screenshot == false) { clearScreen(2); clearScreen(3); }
-      showTa(d.id);
-    } else {
-      if(screenshot == false) { clearScreen(2); clearScreen(3); }
-      showTa(d.id, null, 'hover');
-    }
+    if(screenshot == false) { clearScreen(2); clearScreen(3); }
+    if(status == 'click') showTa(d.id);
+    else showTa(d.id, null, 'hover');
 
 
   // ---------------------- Update Sidebar
@@ -76,20 +73,49 @@ function mouseClickNode(d, extern) {
 // -----------------------------------------------------------------------
 function mouseoveredContinent(name, status) {
 
-  // Hide all Nodes and Linkes
-  hideAllNodesLinksCurrent();
+  currentCountry = name;
 
-  // update sidebar
+  // Hide all Nodes and Linkes
+  if(viewStatus == 'current') {
+    hideAllNodesLinksCurrent();
+    hideAllContinents()
+    if(currentCountry == 'Worldwide') {
+      if(isSafari) d3.select("#lines_current_selected_img").classed("fadeOut",true);
+      else d3.select("#lines_current_selected_canvas").classed("fadeOut",true);
+    }
+    else {
+      if(isSafari) d3.select("#lines_current_selected_img").classed("fadeOut",false);
+      else d3.select("#lines_current_selected_canvas").classed("fadeOut",false);
+    }
+  }
+
+
+
   var found = -1;
   // get continent value in array and save fta number
   continent.forEach(function(k,i) { if(k.key == name) found = i; });
-
   var con_ta_new_arr = continent[found].ftas_new_arr;
-  // show all TAs of that continent
-  clearScreen(3);
-  con_ta_new_arr.forEach(function(d) { showTa(d,null,'hover'); });
+  var con_ta_total_arr = continent[found].ftas_total_arr;
+
+  // ---------------------- Update Sidebar
+  //update name of selection box if not already done
+  var n = name=="EU" ? "Europe" : name=="AS" ? "Asia" : name=="AF" ? "Africa" : name=="SA" ? "South America" : name=="OC" ? "Oceania" : name=="NA" ? "North America" : '';
+  $('#e1').select2("data", {id: 1, text: n});
+    // set ta total and current number
+    //ta_total_arr
+  $('#showTotal .num').text(con_ta_total_arr.length);
+  $('#showCurrent .num').text('+' + con_ta_new_arr.length);
+
+  if(screenshot == false) { clearScreen(2); clearScreen(3); }
+  if(status == 'click') showTa(con_ta_new_arr);
+  else showTa(con_ta_new_arr, null, 'hover');
+
   // display detail informations about TAs
-  // displayTADetails(con_ta_new_arr,status, 'currentTAs');
+  displayTADetails(con_ta_new_arr,status, 'currentTAs');
+  current_ta_total_arr = con_ta_total_arr;
+
+  // update meta charts
+  metaChart(currentCountry, "update");
 }
 
 function mouseClickContinent(d) {
@@ -97,6 +123,15 @@ function mouseClickContinent(d) {
   mouseoveredContinent(d, 'click');
   // active item is this
   selectItem = this;
+
+
+
+  //update hash
+  if(currentCountry != "Worldwide") { var c = d;}
+  else var c = "Worldwide";
+  location.hash = current.val + "_" + formatBlank(c);
+
+
 }
 
 
@@ -170,6 +205,7 @@ function resetSelection() {
     // else $('#showCurrent').click();
     // fade in all other
     showAllNodesLinks();
+    showAllContinents()
 
     //reset select box
     $("#e1").select2("val", "");
@@ -286,8 +322,11 @@ function displayTADetails(data, status, container) {
       });
       if((currentCountry != "Worldwide" && status != "worldwide") || (tas_current_worldwide == '' && currentCountry == "Worldwide") || viewStatus == "total") {
         $("#"+container+" .items").html('');
+        var n = '';
+        if(currentCountry.length == 2) n = currentCountry=="EU" ? "Europe" : currentCountry=="AS" ? "Asia" : currentCountry=="AF" ? "Africa" : currentCountry=="SA" ? "South America" : currentCountry=="OC" ? "Oceania" : currentCountry=="NA" ? "North America" : '';
+        else n = currentCountry.substring(3, currentCountry.length);
         if(tas_!='') $("#"+container+" .items").append(tas_);
-        else $("#"+container+" .items").append('<span style="margin:10px;display:block;">'+currentCountry.substring(3, currentCountry.length) + ' has not signed<br>any trade agreement this year.</span>');
+        else $("#"+container+" .items").append('<span style="margin:10px;display:block;">'+ n + ' has not signed<br>any trade agreement this year.</span>');
         tas_hover();
       }
 
@@ -367,6 +406,25 @@ function hideAllNodesLinksCurrent() {
     d3.select("#lines_current_canvas").classed("fadeOut",true);
     d3.select("#lines_current_selected_hover_canvas").classed("hide",false);
 
+  }
+}
+
+// general selections concerning the visualisation in the center
+function showAllContinents() {
+  // fade out all nodes
+  svg.selectAll(".continent").classed("fadeOut",false).classed("node--active",false);
+}
+
+function hideAllContinents() {
+  // Hide all Nodes and Linkes
+  svg.selectAll(".continent").classed("fadeOut",true).classed("node--active",false);
+    //fade in active node
+  if(currentCountry != "Worldwide") {
+      // add class to all nodes which are in fta array
+    var t = ".continent.continent_" + formatBlank(currentCountry); //d.name
+    // always show node which is selected
+    d3.select(t).classed("node--active",true);
+    // show Nodes and Linkes of one TA with specific ID
   }
 }
 
@@ -475,8 +533,8 @@ function showTa(id,year,status) {
           _links.forEach(function(e,i) {
             if(e.target.id == id) {
               _links_sel.push( e );
-              svg.selectAll(".node."+formatBlank(e.source.name)).classed("hide",false).classed("show",true).classed("fadeOut",false);
-              svg.selectAll(".node."+formatBlank(e.target.name)).classed("hide",false).classed("show",true).classed("fadeOut",false); //.classed("node--active",true)
+              svg.selectAll(".node."+formatBlank(e.source.name)).classed("hide",false).classed("fadeOut",false).classed("node--active",true); //.classed("show",true)
+              svg.selectAll(".node."+formatBlank(e.target.name)).classed("hide",false).classed("fadeOut",false).classed("node--active",true); //.classed("node--active",true)
             }
           });
           showlinks();
@@ -492,7 +550,6 @@ function showTa(id,year,status) {
                   $('.loader').hide();
                   _links_sel = e.data.links;
                   countries = e.data.countries;
-
                   countries.forEach(function(e,i) {
                     svg.selectAll(".node."+formatBlank(e)).classed("hide",false).classed("fadeOut",false).classed("node--active",true);
                   });
@@ -673,8 +730,12 @@ $('#showCurrent').on('click', function(e) {
 
     // hide everything and select what has been selected before
     hideAllNodesLinksCurrent();
+    // resetSelection();
+     // svg.selectAll(".node").classed("show",false)
+
     if(currentCountry != 'Woldwide') {
-      var s = getArrayPos(formatBlank(currentCountry.substring(3, currentCountry.length)), select_list_arr);
+      if(currentCountry.length == 2) var s = 500 + getArrayPos(currentCountry, select_list_arr_cont);
+      else var s = getArrayPos(formatBlank(currentCountry.substring(3, currentCountry.length)), select_list_arr);
       $('#e1').select2("val", s, true);
     }
     // else resetSelection();
@@ -690,9 +751,9 @@ $('#showTotal').on('click', function(e) {
   if(!$(this).hasClass('active')) {
     $('.loader').show();
     $('#legend_container').addClass('fadeOut').css({'pointer-events': 'none'});
-
     $('#showCurrent').removeClass('active');
     $(this).addClass('active');
+
     // load all TAs for worldwide only on click, better for performance
     if(currentCountry == "Worldwide") displayTADetails(ftas_total_arr, '', 'allTAs');
     else displayTADetails(current_ta_total_arr, status, 'allTAs');
@@ -700,8 +761,9 @@ $('#showTotal').on('click', function(e) {
     $('#currentTAs').hide();
     viewStatus = "total";
 
-      clearScreen(4);
-      clearScreen(5);
+    clearScreen(4);
+    clearScreen(5);
+
     // fadeout current canvas and show total canvas
     if(isSafari == true) {
       d3.select("#lines_current_img").classed("hide",true);
@@ -731,7 +793,8 @@ $('#showTotal').on('click', function(e) {
             showTa(e.data.data);
           }
         }, false);
-        worker.postMessage({'cmd': 'totalCountry','currentPos': current.pos, 'currentCountry': currentCountry, 'data': data, 'data_tas': data_tas}); // Start the worker.
+        // find the years for all ftas
+        worker.postMessage({'cmd': 'totalCountry','currentPos': current.pos, 'total_arr': current_ta_total_arr, 'data': data, 'data_tas': data_tas}); // Start the worker.
         //worker.terminate()
       }
       else {

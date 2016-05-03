@@ -40,6 +40,36 @@ svg g:hover
 
 
 
+  .continents
+    .continent
+      &.fadeOut
+        text
+          opacity: .2
+      &.node--active
+        text
+          fill: #000
+          font-weight: 700
+          font-size: 9px
+          opacity: 1
+      text
+        font-size: 9px
+        fill: #999
+        letter-spacing: .6px
+        font-weight: 300
+        &:hover
+          fill: #000
+          font-weight: 700
+
+    .pathContinent
+      stroke: none
+      stroke-width: 0px
+      stroke-opacity: 0
+      fill: none
+    //.pathContinentBack
+    //  stroke: #ffffff
+    //  stroke-width: 7px
+    //  stroke-opacity: 1
+
   .node
     // country label
     text.label
@@ -82,15 +112,15 @@ svg g:hover
       circle
         stroke-opacity: 1
 
-    &.show.fadeOut, &.show.node--active.fadeOut
-      text.label
-        opacity: .1
+    // &.show.fadeOut, &.show.node--active.fadeOut
+    //   text.label
+    //     opacity: .1
 
-      text.labelBg
-        opacity: .1
+    //   text.labelBg
+    //     opacity: .1
 
-      circle
-        stroke-opacity: 0.2
+    //   circle
+    //     stroke-opacity: 0.2
 
     &.node--source, &.show.node--source.fadeOut
       text
@@ -98,7 +128,7 @@ svg g:hover
         font-weight: 700
         font-size: 9px
 
-    &.hide, &.hide.show, &.hide.show.fadeOut
+    &.hide, &.hide.show, &.hide.show.fadeOut, &.hide.fadeOut, &.show.fadeOut, &.show.node--active.fadeOut
       text.label
         opacity: 0 !important
 
@@ -110,7 +140,7 @@ svg g:hover
           opacity: 1 !important
 
       circle
-        stroke-opacity: 0.2 !important
+        stroke-opacity: 0.2
 
     &.node--active.fadeOut
       text.label
@@ -191,25 +221,7 @@ svg g:hover
 
 
 
-  .continents
-    text
-      font-size: 9px
-      fill: #999
-      letter-spacing: .6px
-      font-weight: 300
-      &:hover
-        fill: #000
-        font-weight: 400
 
-    .pathContinent
-      stroke: none
-      stroke-width: 0px
-      stroke-opacity: 0
-      fill: none
-    //.pathContinentBack
-    //  stroke: #ffffff
-    //  stroke-width: 7px
-    //  stroke-opacity: 1
 
 
 

@@ -26,10 +26,11 @@ addEventListener('message', function(e) {
 	  var data__ = e.data;
 
       //select data set of current year and find current selected country
-      var found = -1;
-      data__.data[data__.currentPos].data.forEach(function(k,i) { if(k.name == data__.currentCountry) found = i; });
-      if(found!=-1) {
-        var all_tas = data__.data[data__.currentPos].data[found].ta_total_arr;
+      // var found = -1;
+      // data__.data[data__.currentPos].data.forEach(function(k,i) { if(k.name == data__.currentCountry) found = i; });
+      // if(found!=-1) {
+        // var all_tas = data__.data[data__.currentPos].data[found].ta_total_arr;
+        var all_tas = data__.total_arr;
         // console.log(all_tas);
         var all_tas_arr = [];
         all_tas.forEach(function(k,i) {
@@ -39,7 +40,7 @@ addEventListener('message', function(e) {
         });
 
         postMessage({'cmd':'totalCountryBack','data':all_tas_arr});
-      }
+      // }
 	}
 
 	// get all ftas to the selected year
@@ -50,7 +51,7 @@ addEventListener('message', function(e) {
 	  var countries = [];
 	  function isInArray(value, array) { return array.indexOf(value) > -1; }
 
-	  for(var i = 0; i<=(data__.year-1);i++) {
+	  for(var i = 0; i<=(data__.year);i++) {
 	    var temp = _links_sel.concat(data__.data[i][1]); _links_sel = temp;
 	    data__.data[i][1].forEach(function(f,i) {
 	        if(!isInArray(f.source.name,countries)) countries.push(f.source.name);

@@ -45,17 +45,18 @@ var ftas_new_arr = [],            // array of worldwide new ftas
     depth_average_new_count = 0,  // amount of items of new depth to calculate new average depth
     depth_new = null,             // amount of worldwide new depth
     tas_current_worldwide = "",   // html tag of all worldwide tas
+    select_list_arr_cont = [];    // a list of all contintent in there order appering in the select list, needed for select entry
     select_list_arr = [];         // a list of all countries in there order appering in the select list, needed for select entry
 
 // save some date of each contintent
 var continent = [
-  {key:"AF",name:"Africa",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"AS",name:"Asia",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"EU",name:"Europe",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"NA",name:"North America",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"SA",name:"South America",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"OC",name:"Oceania",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"AN",name:"Antarctica",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0}
+  {key:"AF",name:"Africa",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"AS",name:"Asia",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"EU",name:"Europe",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"NA",name:"North America",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"SA",name:"South America",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"OC",name:"Oceania",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"AN",name:"Antarctica",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]}
 ];
 
 var screenshot = false;
@@ -101,7 +102,7 @@ if(height_mobile < 710) height_mobile = 710;
 if(width_mobile<600) var margin = 0;
 else if(width_mobile<800) var margin = 80;
 else if(width_mobile<1025) var margin = 44; // make circle smaller if on small screen 50
-else var margin = 18; //20
+else var margin = 20; //18
 
 
 

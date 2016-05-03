@@ -310,7 +310,10 @@
 
             <text x="5" y="105" class="legend">HOW TO READ IT?</text>
 
-            <g id="hiddenCanvasOverlay_legend" transform="translate(6,115)"></g>
+            <g id="hiddenCanvasOverlay_legend" transform="translate(6,115)">
+
+
+            </g>
             <text x="8" y="165" class="desc">Color: Depth index based on key statements</text>
 
             <g id="hiddenCanvasOverlay_circle" transform="translate(6,178)"></g>
@@ -327,6 +330,57 @@
           </g>
         </svg>
       </div>
+
+      <div id="hiddenCanvas_continents"  style="display: none;">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" xml:space="preserve" width="400" height="900" viewBox="0 0 400 900" preserveAspectRatio="xMinYMid meet">
+          <defs>
+            <style type="text/css"> <![CDATA[
+              text {
+                font-weight: 400;
+                font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 9px;
+                fill: #648294;
+                letter-spacing: 0.1px;
+                text-rendering: geometricPrecision; }
+              #container text.h2, text.h2 {
+                font-size: 18px;
+                font-weight: 400;
+                fill: #4d6472;
+              }
+              #container text.legend, text.legend {
+                font-size: 10px;
+                font-weight: 300;
+                fill: #4d6472;
+              }
+
+              #container text.desc, text.desc {
+                font-size: 10px;
+                font-weight: 300;
+                fill: #648294;
+              }
+
+              circle {
+                stroke: #333;
+                stroke-width: 0.5px;
+                stroke-opacity: 0.2;
+                fill-opacity: 0;
+              }
+
+              // #hiddenCanvasOverlay {display: none;}
+              ]]>
+            </style>
+          </defs>
+          <g id="hiddenCanvasOverlay2" transform="translate(0,0)">
+            <text x="0" y="3" class="desc europe">EUROPE</text>
+            <text x="0" y="28" class="desc asia">ASIA</text>
+            <text x="0" y="53" class="desc oceania">OCEANIA</text>
+            <text x="0" y="53" class="desc africa">AFRICA</text>
+            <text x="0" y="53" class="desc sa">SOUTH AMERICA</text>
+            <text x="0" y="53" class="desc na">NORTH AMERICA</text>
+          </g>
+        </svg>
+      </div>
+
       <canvas id='hiddenCanvas' style="display: none;"></canvas>
 
 

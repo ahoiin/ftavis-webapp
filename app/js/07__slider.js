@@ -63,15 +63,23 @@ $("#slider").on({
 
 	  //update hash
 	  if(playStatus == false) {
-		  if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
+	  	  if(currentCountry.length == 2) var c = currentCountry;
+		  else if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
 		  else var c = "Worldwide";
 		  location.hash = current.val + "_" + formatBlank(c);
 	  }
 
 	  if(currentCountry != "Worldwide") {
-	  	d3.select(".node." + formatBlank(currentCountry)).each(function(d, i) {
-	        mouseClickNode(d, d.name);
-		});
+	  	if(currentCountry.length == 2) {
+	  		d3.select(".continent.continent_" + currentCountry).each(function(d, i) {
+		        d3.select(this).on('click').apply(this, arguments);
+			});
+	  	}
+	  	else {
+		  	d3.select(".node." + formatBlank(currentCountry)).each(function(d, i) {
+		        mouseClickNode(d, d.name);
+			});
+		}
 	  } else {
 		// show all tas
 		if(isSafari) d3.select("#lines_current_img").classed("fadeOut",false);

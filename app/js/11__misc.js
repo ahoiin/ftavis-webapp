@@ -108,7 +108,7 @@ function dataURItoBlob(dataURI) {
  */
 
 // set resolution
-var multi = 3;
+var multi = 4;
 
 var d = height * multi; //d3.select("#nodes svg").node().offsetHeight //
 var country__, time__, fta__;
@@ -166,22 +166,39 @@ var svgenie = (function(){
           _links_sel_all_selected.forEach(function(f) { drawLinks(f,'total','hover'); });
         }
 
-        $('#hiddenCanvasOverlay').show();
-
+        // $('#hiddenCanvasOverlay').show();
+        var offsetXGraph = -radius/50
         // convert svg nodes to canvas, draw nodes first --- nodes
         canvg( 'hiddenCanvas' , _serializeXmlNode(svg), {
             ignoreMouse : true,
             ignoreAnimation : true,
             ignoreDimensions:true,
             ignoreClear: true,
-            offsetX:-d/55,
+            offsetX:0 + offsetXGraph, //-d/55
             offsetY:10,
-            renderCallback : function(){
-
-              // var canvas = d3.select('#hiddenCanvas').node();
-              // callback( canvas );
-            }
+            renderCallback : function(){}
         });
+
+        // position continent names
+        $('#hiddenCanvas_continents .europe').attr('x', offsetXGraph +radius + radius/1.8).attr('y', radius/3.5);
+        $('#hiddenCanvas_continents .asia').attr('x',   offsetXGraph +radius + radius/1.5).attr('y', radius + radius/1.5);
+        $('#hiddenCanvas_continents .oceania').attr('x',offsetXGraph -(-offsetXGraph) +radius).attr('y', radius + radius - radius/10);
+        $('#hiddenCanvas_continents .africa').attr('x', offsetXGraph +radius/5).attr('y', radius + radius/2);
+        $('#hiddenCanvas_continents .sa').attr('x',     offsetXGraph +radius/10).attr('y', radius - radius/2.5);
+        $('#hiddenCanvas_continents .na').attr('x',     offsetXGraph +radius - radius/1.5).attr('y', radius/3.5);
+
+        // convert svg nodes to canvas, draw nodes first  ----- legend, source text
+        canvg( 'hiddenCanvas' , _serializeXmlNode( d3.select("#hiddenCanvas_continents svg").node() ), {
+            ignoreMouse : true,
+            ignoreAnimation : true,
+            ignoreDimensions:true,
+            ignoreClear: true,
+            offsetX:0,
+            offsetY:0,
+            renderCallback : function(){}
+        });
+
+
 
         // convert svg nodes to canvas, draw nodes first  ----- legend, source text
         canvg( 'hiddenCanvas' , _serializeXmlNode( d3.select("#hiddenCanvas_text svg").node() ), {
@@ -189,12 +206,12 @@ var svgenie = (function(){
             ignoreAnimation : true,
             ignoreDimensions:true,
             ignoreClear: true,
-            offsetX:radius*2 - radius/4,
-            offsetY:radius/2 + radius/8,
+            offsetX:radius*2 - radius/15,
+            offsetY:radius/2 + radius/15,
             // scaleWidth: d,
             // scaleHeight: d,
             renderCallback : function(){
-              $('#hiddenCanvasOverlay').hide();
+              // $('#hiddenCanvasOverlay').hide();
               $('.loader').hide();
               var canvas = d3.select('#hiddenCanvas').node();
               callback( canvas );
@@ -237,7 +254,8 @@ var svgenie = (function(){
           _pretendClick(a);
 
           //update hash
-          if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
+          if(currentCountry.length == 2) var c = currentCountry;
+          else if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
           else var c = "Worldwide";
           location.hash = current.val + "_" + formatBlank(c);
 
@@ -252,7 +270,8 @@ var svgenie = (function(){
           // _pretendClick(a);
 
           //update hash
-          if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
+          if(currentCountry.length == 2) var c = currentCountry;
+          else if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
           else var c = "Worldwide";
           location.hash = current.val + "_" + formatBlank(c);
 
@@ -305,9 +324,11 @@ function makeScreenshot() {
   $('.loader').show();
   screenshot = true;
 
+
+
   // set variables
-  country__ = (currentCountry == "Worldwide") ? "Worldwide" : formatBlank(currentCountry.substring(3, currentCountry.length));
-  var article = (viewStatus == "current") ? "In " : "Until ";
+  country__ = currentCountry == "Worldwide" ? "Worldwide" : currentCountry.length == 2 ? (currentCountry=="EU" ? "Europe" : currentCountry=="AS" ? "Asia" : currentCountry=="AF" ? "Africa" : currentCountry=="SA" ? "South America" : currentCountry=="OC" ? "Oceania" : currentCountry=="NA" ? "North America" : '') : formatBlank(currentCountry.substring(3, currentCountry.length));
+  var article = (viewStatus == "current") ? "in " : "from 1948 until ";
   time__ = (viewStatus == "current") ? current.val : current.val;
   if(ta_click != false ) fta__ = ta_click.context.firstChild.innerHTML;
   else fta__ = null;
@@ -321,21 +342,26 @@ function makeScreenshot() {
     } else {
       if((currentCountry == "Worldwide")) d3.select("#hiddenCanvas_text svg .h2.first").text("All Trade Agreements");
       else d3.select("#hiddenCanvas_text svg .h2.first").text("All Trade Agreements of");
-      d3.select("#hiddenCanvas_text svg .h2.second").text(country__.replace( /-/ig, " " ));
-      d3.select("#hiddenCanvas_text svg .h2.third").text(article + time__);
+      if(country__.replace( /-/ig).length > 6) {
+        d3.select("#hiddenCanvas_text svg .h2.second").text(country__.replace( /-/ig, " " ));
+        d3.select("#hiddenCanvas_text svg .h2.third").text(article + time__);
+      } else {
+        d3.select("#hiddenCanvas_text svg .h2.second").text( (country__.replace( /-/ig, " " )) + " " +article + time__ );
+        d3.select("#hiddenCanvas_text svg .h2.third").text("");
+      }
     }
 
     // copy legend color and circle
     $("#legend_depth svg .legend_de").clone().appendTo($("#hiddenCanvasOverlay_legend"));
     $("#legend_connections svg .legend_co").clone().appendTo($("#hiddenCanvasOverlay_circle"));
-
+    $("#hiddenCanvasOverlay_legend .legend_de rect.rectDepth").attr('height',16).attr('y',2);
 
 
   // generate filename
   var fileName = (fta__ != null) ? fta__.replace(/\s+/g, '')+"_"+time__ : country__.replace(/\s+/g, '')+"_"+time__;
 
   var hiddenCanvas = d3.select('#hiddenCanvas')
-    .attr('width', d + d/5 )
+    .attr('width', d + d/3 )
     .attr('height',d - 30)
     .style("width", d/multi + 'px')
     .style("height", d/multi + 'px');

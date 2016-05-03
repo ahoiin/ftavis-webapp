@@ -69,8 +69,35 @@ svg_taVis.call(tip);
 function metaChart(selectCountry) {
 
     var chart_ta=[];
+// console.log(data, selectCountry);
+    if(selectCountry != "Worldwide" && selectCountry.length == 2) {
+      // console.log(data, selectCountry);
+      data.forEach(function(d) {
+        var found = -1;
+        var c = [];
+        d.data.forEach(function(e,i) { if(e.name.substring(0, 2) == selectCountry) c.push(i); });
+        if(c.length > 0) {
+          var data_ = [];
+          c.forEach(function(e,i) {
+            d.data[e].imports.forEach(function(d) { data_.push({id:d.id,depth:d.depth}); })
+          });
 
-    if(selectCountry != "Worldwide") {
+          var result = data_.reduce(function(memo, e1){
+            var matches = memo.filter(function(e2){
+              return e1.id == e2.id
+            })
+            if (matches.length == 0)
+              memo.push(e1)
+              return memo;
+          }, [])
+
+          result.sort(function(a, b) { return a.depth - b.depth; });
+          chart_ta.push({year:new Date(d.year, 0),data:result});
+        }
+      });
+
+    }
+    else if(selectCountry != "Worldwide") {
       data.forEach(function(d) {
         var found = -1;
         d.data.forEach(function(e,i) { if(e.name == selectCountry) found = i; });

@@ -1,8 +1,4 @@
-/*
- * MIT Licensed
- * Sebastian Sadowski (ahoi.in)
- *
- */
+
 
 
 // Define Variables and Basic Functions
@@ -49,17 +45,18 @@ var ftas_new_arr = [],            // array of worldwide new ftas
     depth_average_new_count = 0,  // amount of items of new depth to calculate new average depth
     depth_new = null,             // amount of worldwide new depth
     tas_current_worldwide = "",   // html tag of all worldwide tas
+    select_list_arr_cont = [];    // a list of all contintent in there order appering in the select list, needed for select entry
     select_list_arr = [];         // a list of all countries in there order appering in the select list, needed for select entry
 
 // save some date of each contintent
 var continent = [
-  {key:"AF",name:"Africa",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"AS",name:"Asia",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"EU",name:"Europe",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"NA",name:"North America",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"SA",name:"South America",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"OC",name:"Oceania",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0},
-  {key:"AN",name:"Antarctica",ftas:0,ftas_new:0,ftas_new_arr:[],depth_average:0,depth_average_new:0}
+  {key:"AF",name:"Africa",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"AS",name:"Asia",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"EU",name:"Europe",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"NA",name:"North America",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"SA",name:"South America",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"OC",name:"Oceania",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]},
+  {key:"AN",name:"Antarctica",ftas:0,ftas_new:0,ftas_new_arr:[],ftas_total_arr:[]}
 ];
 
 var screenshot = false;
@@ -105,7 +102,7 @@ if(height_mobile < 710) height_mobile = 710;
 if(width_mobile<600) var margin = 0;
 else if(width_mobile<800) var margin = 80;
 else if(width_mobile<1025) var margin = 44; // make circle smaller if on small screen 50
-else var margin = 18; //20
+else var margin = 20; //18
 
 
 
@@ -536,7 +533,9 @@ function init() {
 
   // check second time hash for country if everything is loaded
   if(typeof hash_[1] !== 'undefined') {
-    var s = getArrayPos(hash_[1], select_list_arr);
+    if(hash_[1].length == 2) var s = 500 + getArrayPos(hash_[1], select_list_arr_cont);
+    else var s = getArrayPos(hash_[1], select_list_arr);
+
     if(!isNaN(s)) {
       $('#e1').select2("val", s, true);
       //bug, so change hash again manually
@@ -753,11 +752,33 @@ function draw() {
     if(continent[i].key=="OC")  center_text =  "69%";
 
 
+
+
     var cont_ = cont.append('g')
-      .classed('continent_'+continent[i].key,true)
-      .on("mouseover",   function(d) { var t = $(this).attr('class'); var c = t.substring(t.length-2, t.length); if(selectItem == false) { mouseoveredContinent(c, 'hover'); } })
-      .on("mouseout",    function(d) { if(selectItem == false) { resetSelection();   } })
-      .on("click",       function(d) { var t = $(this).attr('class'); var c = t.substring(t.length-2, t.length); mouseClickContinent(c); });
+      .attr('class', 'continent_'+continent[i].key+" continent" )
+      .on("mouseover",   function(d) {
+        nodeHover=true;
+        var t = $(this).attr('class');
+        t = t.split(/[ ]+/);
+        var c = t[0].substring(t[0].length-2, t[0].length);
+        if(selectItem == false) {
+          if($(this).attr('class').indexOf("node--active") < 0) resetSelection();
+          mouseoveredContinent(c, 'hover');
+        }
+      })
+      .on("mouseout",    function(d) {
+        nodeHover=false;
+        setTimeout(function() {
+          if(selectItem == false && nodeHover == false) resetSelection();
+        }, 25);
+      })
+      .on("click",  function(d) {
+        var t = $(this).attr('class'); t = t.split(/[ ]+/);
+        var c = t[0].substring(t[0].length-2, t[0].length);
+        mouseClickContinent(c);
+      });
+
+
 
     var path = cont_.append("path")
       .attr("id", "path"+continent[i].key)
@@ -846,12 +867,15 @@ function update() {
 
       // check all children after fta ids and add it to array
       var continent_ftas_new   = [];
+      var continent_ftas_total   = [];
 
       // for each ta of this contintent
       e.children.forEach(function(m) {
 
         m.ta_total_arr.forEach(function(n) {
           if(n!=0 && !isInArray(n,ftas_total_arr)) ftas_total_arr.push(n);
+          if(n!=0 && !isInArray(n,continent_ftas_total)) continent_ftas_total.push(n);
+
         });
 
         m.imports.forEach(function(n) {
@@ -866,7 +890,10 @@ function update() {
       // get continent value in array and save fta number
       var found = -1;
       continent.forEach(function(k,i) { if(k.key == e.name) found = i; });
-      if(found != -1) continent[found].ftas_new_arr = continent_ftas_new;
+      if(found != -1) {
+        continent[found].ftas_new_arr = continent_ftas_new;
+        continent[found].ftas_total_arr = continent_ftas_total;
+      }
     }
   });
 
@@ -1152,7 +1179,7 @@ function canvas_draw_lines(data, id, color, members) {
     }
     // draw everythin at one new canvas
     id = 10;
-    radius_x = radius - d/55;
+    radius_x = radius - radius/50 ; //- d/55
     radius_y = radius + 10;
   };
   //pathspec strings can be taken from the 'd' attribute of an svg path
@@ -1194,6 +1221,7 @@ function mouseoveredNode(d, status, extern) {
     // Hide all Nodes and Linkes
     if(viewStatus == 'current') {
       hideAllNodesLinksCurrent();
+      showAllContinents();
       if(currentCountry == 'Worldwide') {
         if(isSafari) d3.select("#lines_current_selected_img").classed("fadeOut",true);
         else d3.select("#lines_current_selected_canvas").classed("fadeOut",true);
@@ -1205,13 +1233,9 @@ function mouseoveredNode(d, status, extern) {
     }
 
 
-    if(status == 'click') {
-      if(screenshot == false) { clearScreen(2); clearScreen(3); }
-      showTa(d.id);
-    } else {
-      if(screenshot == false) { clearScreen(2); clearScreen(3); }
-      showTa(d.id, null, 'hover');
-    }
+    if(screenshot == false) { clearScreen(2); clearScreen(3); }
+    if(status == 'click') showTa(d.id);
+    else showTa(d.id, null, 'hover');
 
 
   // ---------------------- Update Sidebar
@@ -1251,20 +1275,49 @@ function mouseClickNode(d, extern) {
 // -----------------------------------------------------------------------
 function mouseoveredContinent(name, status) {
 
-  // Hide all Nodes and Linkes
-  hideAllNodesLinksCurrent();
+  currentCountry = name;
 
-  // update sidebar
+  // Hide all Nodes and Linkes
+  if(viewStatus == 'current') {
+    hideAllNodesLinksCurrent();
+    hideAllContinents()
+    if(currentCountry == 'Worldwide') {
+      if(isSafari) d3.select("#lines_current_selected_img").classed("fadeOut",true);
+      else d3.select("#lines_current_selected_canvas").classed("fadeOut",true);
+    }
+    else {
+      if(isSafari) d3.select("#lines_current_selected_img").classed("fadeOut",false);
+      else d3.select("#lines_current_selected_canvas").classed("fadeOut",false);
+    }
+  }
+
+
+
   var found = -1;
   // get continent value in array and save fta number
   continent.forEach(function(k,i) { if(k.key == name) found = i; });
-
   var con_ta_new_arr = continent[found].ftas_new_arr;
-  // show all TAs of that continent
-  clearScreen(3);
-  con_ta_new_arr.forEach(function(d) { showTa(d,null,'hover'); });
+  var con_ta_total_arr = continent[found].ftas_total_arr;
+
+  // ---------------------- Update Sidebar
+  //update name of selection box if not already done
+  var n = name=="EU" ? "Europe" : name=="AS" ? "Asia" : name=="AF" ? "Africa" : name=="SA" ? "South America" : name=="OC" ? "Oceania" : name=="NA" ? "North America" : '';
+  $('#e1').select2("data", {id: 1, text: n});
+    // set ta total and current number
+    //ta_total_arr
+  $('#showTotal .num').text(con_ta_total_arr.length);
+  $('#showCurrent .num').text('+' + con_ta_new_arr.length);
+
+  if(screenshot == false) { clearScreen(2); clearScreen(3); }
+  if(status == 'click') showTa(con_ta_new_arr);
+  else showTa(con_ta_new_arr, null, 'hover');
+
   // display detail informations about TAs
-  // displayTADetails(con_ta_new_arr,status, 'currentTAs');
+  displayTADetails(con_ta_new_arr,status, 'currentTAs');
+  current_ta_total_arr = con_ta_total_arr;
+
+  // update meta charts
+  metaChart(currentCountry, "update");
 }
 
 function mouseClickContinent(d) {
@@ -1272,6 +1325,15 @@ function mouseClickContinent(d) {
   mouseoveredContinent(d, 'click');
   // active item is this
   selectItem = this;
+
+
+
+  //update hash
+  if(currentCountry != "Worldwide") { var c = d;}
+  else var c = "Worldwide";
+  location.hash = current.val + "_" + formatBlank(c);
+
+
 }
 
 
@@ -1345,6 +1407,7 @@ function resetSelection() {
     // else $('#showCurrent').click();
     // fade in all other
     showAllNodesLinks();
+    showAllContinents()
 
     //reset select box
     $("#e1").select2("val", "");
@@ -1461,8 +1524,11 @@ function displayTADetails(data, status, container) {
       });
       if((currentCountry != "Worldwide" && status != "worldwide") || (tas_current_worldwide == '' && currentCountry == "Worldwide") || viewStatus == "total") {
         $("#"+container+" .items").html('');
+        var n = '';
+        if(currentCountry.length == 2) n = currentCountry=="EU" ? "Europe" : currentCountry=="AS" ? "Asia" : currentCountry=="AF" ? "Africa" : currentCountry=="SA" ? "South America" : currentCountry=="OC" ? "Oceania" : currentCountry=="NA" ? "North America" : '';
+        else n = currentCountry.substring(3, currentCountry.length);
         if(tas_!='') $("#"+container+" .items").append(tas_);
-        else $("#"+container+" .items").append('<span style="margin:10px;display:block;">'+currentCountry.substring(3, currentCountry.length) + ' has not signed<br>any trade agreement this year.</span>');
+        else $("#"+container+" .items").append('<span style="margin:10px;display:block;">'+ n + ' has not signed<br>any trade agreement this year.</span>');
         tas_hover();
       }
 
@@ -1542,6 +1608,25 @@ function hideAllNodesLinksCurrent() {
     d3.select("#lines_current_canvas").classed("fadeOut",true);
     d3.select("#lines_current_selected_hover_canvas").classed("hide",false);
 
+  }
+}
+
+// general selections concerning the visualisation in the center
+function showAllContinents() {
+  // fade out all nodes
+  svg.selectAll(".continent").classed("fadeOut",false).classed("node--active",false);
+}
+
+function hideAllContinents() {
+  // Hide all Nodes and Linkes
+  svg.selectAll(".continent").classed("fadeOut",true).classed("node--active",false);
+    //fade in active node
+  if(currentCountry != "Worldwide") {
+      // add class to all nodes which are in fta array
+    var t = ".continent.continent_" + formatBlank(currentCountry); //d.name
+    // always show node which is selected
+    d3.select(t).classed("node--active",true);
+    // show Nodes and Linkes of one TA with specific ID
   }
 }
 
@@ -1650,8 +1735,8 @@ function showTa(id,year,status) {
           _links.forEach(function(e,i) {
             if(e.target.id == id) {
               _links_sel.push( e );
-              svg.selectAll(".node."+formatBlank(e.source.name)).classed("hide",false).classed("show",true).classed("fadeOut",false);
-              svg.selectAll(".node."+formatBlank(e.target.name)).classed("hide",false).classed("show",true).classed("fadeOut",false); //.classed("node--active",true)
+              svg.selectAll(".node."+formatBlank(e.source.name)).classed("hide",false).classed("fadeOut",false).classed("node--active",true); //.classed("show",true)
+              svg.selectAll(".node."+formatBlank(e.target.name)).classed("hide",false).classed("fadeOut",false).classed("node--active",true); //.classed("node--active",true)
             }
           });
           showlinks();
@@ -1667,7 +1752,6 @@ function showTa(id,year,status) {
                   $('.loader').hide();
                   _links_sel = e.data.links;
                   countries = e.data.countries;
-
                   countries.forEach(function(e,i) {
                     svg.selectAll(".node."+formatBlank(e)).classed("hide",false).classed("fadeOut",false).classed("node--active",true);
                   });
@@ -1848,8 +1932,12 @@ $('#showCurrent').on('click', function(e) {
 
     // hide everything and select what has been selected before
     hideAllNodesLinksCurrent();
+    // resetSelection();
+     // svg.selectAll(".node").classed("show",false)
+
     if(currentCountry != 'Woldwide') {
-      var s = getArrayPos(formatBlank(currentCountry.substring(3, currentCountry.length)), select_list_arr);
+      if(currentCountry.length == 2) var s = 500 + getArrayPos(currentCountry, select_list_arr_cont);
+      else var s = getArrayPos(formatBlank(currentCountry.substring(3, currentCountry.length)), select_list_arr);
       $('#e1').select2("val", s, true);
     }
     // else resetSelection();
@@ -1865,9 +1953,9 @@ $('#showTotal').on('click', function(e) {
   if(!$(this).hasClass('active')) {
     $('.loader').show();
     $('#legend_container').addClass('fadeOut').css({'pointer-events': 'none'});
-
     $('#showCurrent').removeClass('active');
     $(this).addClass('active');
+
     // load all TAs for worldwide only on click, better for performance
     if(currentCountry == "Worldwide") displayTADetails(ftas_total_arr, '', 'allTAs');
     else displayTADetails(current_ta_total_arr, status, 'allTAs');
@@ -1875,8 +1963,9 @@ $('#showTotal').on('click', function(e) {
     $('#currentTAs').hide();
     viewStatus = "total";
 
-      clearScreen(4);
-      clearScreen(5);
+    clearScreen(4);
+    clearScreen(5);
+
     // fadeout current canvas and show total canvas
     if(isSafari == true) {
       d3.select("#lines_current_img").classed("hide",true);
@@ -1906,7 +1995,8 @@ $('#showTotal').on('click', function(e) {
             showTa(e.data.data);
           }
         }, false);
-        worker.postMessage({'cmd': 'totalCountry','currentPos': current.pos, 'currentCountry': currentCountry, 'data': data, 'data_tas': data_tas}); // Start the worker.
+        // find the years for all ftas
+        worker.postMessage({'cmd': 'totalCountry','currentPos': current.pos, 'total_arr': current_ta_total_arr, 'data': data, 'data_tas': data_tas}); // Start the worker.
         //worker.terminate()
       }
       else {
@@ -2000,15 +2090,23 @@ $("#slider").on({
 
 	  //update hash
 	  if(playStatus == false) {
-		  if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
+	  	  if(currentCountry.length == 2) var c = currentCountry;
+		  else if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
 		  else var c = "Worldwide";
 		  location.hash = current.val + "_" + formatBlank(c);
 	  }
 
 	  if(currentCountry != "Worldwide") {
-	  	d3.select(".node." + formatBlank(currentCountry)).each(function(d, i) {
-	        mouseClickNode(d, d.name);
-		});
+	  	if(currentCountry.length == 2) {
+	  		d3.select(".continent.continent_" + currentCountry).each(function(d, i) {
+		        d3.select(this).on('click').apply(this, arguments);
+			});
+	  	}
+	  	else {
+		  	d3.select(".node." + formatBlank(currentCountry)).each(function(d, i) {
+		        mouseClickNode(d, d.name);
+			});
+		}
 	  } else {
 		// show all tas
 		if(isSafari) d3.select("#lines_current_img").classed("fadeOut",false);
@@ -2196,7 +2294,10 @@ function createSelectBox(nodes__) {
     else if(nodes__[i].key=="AF") json.text = "Africa";
     else if(nodes__[i].key=="SA") json.text = "South America";
     else if(nodes__[i].key=="NA") json.text = "North America";
+    json.id = 500+i;
+    json.name = nodes__[i].key;
     json.children = [];
+    select_list_arr_cont.push(nodes__[i].key);
     for(var j=0;j<nodes__[i].children.length;j++) {
       json.children.push({id: count, text: nodes__[i].children[j].key, name: nodes__[i].children[j].name});
       select_list_arr.push(formatBlank(nodes__[i].children[j].key));
@@ -2204,7 +2305,6 @@ function createSelectBox(nodes__) {
     }
     results.push(json);
   }
-
   // init select2 box
   $("#e1").select2({
       minimumResultsForSearch: 0,
@@ -2222,10 +2322,20 @@ function createSelectBox(nodes__) {
     svg.selectAll(".node").classed("hide",false).classed("node--active",false).classed("node--source",false);
     // svg_lines.selectAll(".link").classed("hide",false).classed("link--active", false);
     // -------------------- add new selection if not worldwide
-    if(e.added) {
+    if(e.added && !e.added.children) {
       var name = formatBlank(e.added.name);
       d3.select(".node." + name).each(function(d, i) {
-          mouseClickNode(d, e.added.name, true);
+          // mouseClickNode(d, e.added.name, true);
+          d3.select(this).on('click').apply(this, arguments);
+      });
+      //track user interaction with google events
+      ga('send', 'event', 'new_country_val', name);
+    }
+    else if(e.added && e.added.children) {
+      var name = formatBlank(e.added.name);
+      d3.select(".continent_" + name).each(function(d, i) {
+        d3.select(this).on('click').apply(this, arguments);
+          // mouseClickNode(d, e.added.name, true);
       });
       //track user interaction with google events
       ga('send', 'event', 'new_country_val', name);
@@ -2237,8 +2347,11 @@ function createSelectBox(nodes__) {
     }
 
     //update hash
-    if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
+    // if(e.added) { if(e.added.name.length == 2)  var c = e.added.name; }
+    if(currentCountry.length == 2) var c = currentCountry;
+    else if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
     else var c = "Worldwide";
+
     location.hash = current.val + "_" + formatBlank(c);
 
     // register user interation for disable auto slider
@@ -2318,8 +2431,35 @@ svg_taVis.call(tip);
 function metaChart(selectCountry) {
 
     var chart_ta=[];
+// console.log(data, selectCountry);
+    if(selectCountry != "Worldwide" && selectCountry.length == 2) {
+      // console.log(data, selectCountry);
+      data.forEach(function(d) {
+        var found = -1;
+        var c = [];
+        d.data.forEach(function(e,i) { if(e.name.substring(0, 2) == selectCountry) c.push(i); });
+        if(c.length > 0) {
+          var data_ = [];
+          c.forEach(function(e,i) {
+            d.data[e].imports.forEach(function(d) { data_.push({id:d.id,depth:d.depth}); })
+          });
 
-    if(selectCountry != "Worldwide") {
+          var result = data_.reduce(function(memo, e1){
+            var matches = memo.filter(function(e2){
+              return e1.id == e2.id
+            })
+            if (matches.length == 0)
+              memo.push(e1)
+              return memo;
+          }, [])
+
+          result.sort(function(a, b) { return a.depth - b.depth; });
+          chart_ta.push({year:new Date(d.year, 0),data:result});
+        }
+      });
+
+    }
+    else if(selectCountry != "Worldwide") {
       data.forEach(function(d) {
         var found = -1;
         d.data.forEach(function(e,i) { if(e.name == selectCountry) found = i; });
@@ -2708,7 +2848,7 @@ function dataURItoBlob(dataURI) {
  */
 
 // set resolution
-var multi = 3;
+var multi = 4;
 
 var d = height * multi; //d3.select("#nodes svg").node().offsetHeight //
 var country__, time__, fta__;
@@ -2766,22 +2906,39 @@ var svgenie = (function(){
           _links_sel_all_selected.forEach(function(f) { drawLinks(f,'total','hover'); });
         }
 
-        $('#hiddenCanvasOverlay').show();
-
+        // $('#hiddenCanvasOverlay').show();
+        var offsetXGraph = -radius/50
         // convert svg nodes to canvas, draw nodes first --- nodes
         canvg( 'hiddenCanvas' , _serializeXmlNode(svg), {
             ignoreMouse : true,
             ignoreAnimation : true,
             ignoreDimensions:true,
             ignoreClear: true,
-            offsetX:-d/55,
+            offsetX:0 + offsetXGraph, //-d/55
             offsetY:10,
-            renderCallback : function(){
-
-              // var canvas = d3.select('#hiddenCanvas').node();
-              // callback( canvas );
-            }
+            renderCallback : function(){}
         });
+
+        // position continent names
+        $('#hiddenCanvas_continents .europe').attr('x', offsetXGraph +radius + radius/1.8).attr('y', radius/3.5);
+        $('#hiddenCanvas_continents .asia').attr('x',   offsetXGraph +radius + radius/1.5).attr('y', radius + radius/1.5);
+        $('#hiddenCanvas_continents .oceania').attr('x',offsetXGraph -(-offsetXGraph) +radius).attr('y', radius + radius - radius/10);
+        $('#hiddenCanvas_continents .africa').attr('x', offsetXGraph +radius/5).attr('y', radius + radius/2);
+        $('#hiddenCanvas_continents .sa').attr('x',     offsetXGraph +radius/10).attr('y', radius - radius/2.5);
+        $('#hiddenCanvas_continents .na').attr('x',     offsetXGraph +radius - radius/1.5).attr('y', radius/3.5);
+
+        // convert svg nodes to canvas, draw nodes first  ----- legend, source text
+        canvg( 'hiddenCanvas' , _serializeXmlNode( d3.select("#hiddenCanvas_continents svg").node() ), {
+            ignoreMouse : true,
+            ignoreAnimation : true,
+            ignoreDimensions:true,
+            ignoreClear: true,
+            offsetX:0,
+            offsetY:0,
+            renderCallback : function(){}
+        });
+
+
 
         // convert svg nodes to canvas, draw nodes first  ----- legend, source text
         canvg( 'hiddenCanvas' , _serializeXmlNode( d3.select("#hiddenCanvas_text svg").node() ), {
@@ -2789,12 +2946,12 @@ var svgenie = (function(){
             ignoreAnimation : true,
             ignoreDimensions:true,
             ignoreClear: true,
-            offsetX:radius*2 - radius/4,
-            offsetY:radius/2 + radius/8,
+            offsetX:radius*2 - radius/15,
+            offsetY:radius/2 + radius/15,
             // scaleWidth: d,
             // scaleHeight: d,
             renderCallback : function(){
-              $('#hiddenCanvasOverlay').hide();
+              // $('#hiddenCanvasOverlay').hide();
               $('.loader').hide();
               var canvas = d3.select('#hiddenCanvas').node();
               callback( canvas );
@@ -2837,7 +2994,8 @@ var svgenie = (function(){
           _pretendClick(a);
 
           //update hash
-          if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
+          if(currentCountry.length == 2) var c = currentCountry;
+          else if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
           else var c = "Worldwide";
           location.hash = current.val + "_" + formatBlank(c);
 
@@ -2852,7 +3010,8 @@ var svgenie = (function(){
           // _pretendClick(a);
 
           //update hash
-          if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
+          if(currentCountry.length == 2) var c = currentCountry;
+          else if(currentCountry != "Worldwide") { var c = currentCountry.split("."); c = c[1];}
           else var c = "Worldwide";
           location.hash = current.val + "_" + formatBlank(c);
 
@@ -2905,9 +3064,11 @@ function makeScreenshot() {
   $('.loader').show();
   screenshot = true;
 
+
+
   // set variables
-  country__ = (currentCountry == "Worldwide") ? "Worldwide" : formatBlank(currentCountry.substring(3, currentCountry.length));
-  var article = (viewStatus == "current") ? "In " : "Until ";
+  country__ = currentCountry == "Worldwide" ? "Worldwide" : currentCountry.length == 2 ? (currentCountry=="EU" ? "Europe" : currentCountry=="AS" ? "Asia" : currentCountry=="AF" ? "Africa" : currentCountry=="SA" ? "South America" : currentCountry=="OC" ? "Oceania" : currentCountry=="NA" ? "North America" : '') : formatBlank(currentCountry.substring(3, currentCountry.length));
+  var article = (viewStatus == "current") ? "in " : "from 1948 until ";
   time__ = (viewStatus == "current") ? current.val : current.val;
   if(ta_click != false ) fta__ = ta_click.context.firstChild.innerHTML;
   else fta__ = null;
@@ -2921,21 +3082,26 @@ function makeScreenshot() {
     } else {
       if((currentCountry == "Worldwide")) d3.select("#hiddenCanvas_text svg .h2.first").text("All Trade Agreements");
       else d3.select("#hiddenCanvas_text svg .h2.first").text("All Trade Agreements of");
-      d3.select("#hiddenCanvas_text svg .h2.second").text(country__.replace( /-/ig, " " ));
-      d3.select("#hiddenCanvas_text svg .h2.third").text(article + time__);
+      if(country__.replace( /-/ig).length > 6) {
+        d3.select("#hiddenCanvas_text svg .h2.second").text(country__.replace( /-/ig, " " ));
+        d3.select("#hiddenCanvas_text svg .h2.third").text(article + time__);
+      } else {
+        d3.select("#hiddenCanvas_text svg .h2.second").text( (country__.replace( /-/ig, " " )) + " " +article + time__ );
+        d3.select("#hiddenCanvas_text svg .h2.third").text("");
+      }
     }
 
     // copy legend color and circle
     $("#legend_depth svg .legend_de").clone().appendTo($("#hiddenCanvasOverlay_legend"));
     $("#legend_connections svg .legend_co").clone().appendTo($("#hiddenCanvasOverlay_circle"));
-
+    $("#hiddenCanvasOverlay_legend .legend_de rect.rectDepth").attr('height',16).attr('y',2);
 
 
   // generate filename
   var fileName = (fta__ != null) ? fta__.replace(/\s+/g, '')+"_"+time__ : country__.replace(/\s+/g, '')+"_"+time__;
 
   var hiddenCanvas = d3.select('#hiddenCanvas')
-    .attr('width', d + d/5 )
+    .attr('width', d + d/3 )
     .attr('height',d - 30)
     .style("width", d/multi + 'px')
     .style("height", d/multi + 'px');

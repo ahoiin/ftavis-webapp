@@ -3836,6 +3836,26 @@ svg g:hover {
   fill: #628085; }
 #container #legend_connections g:hover {
   cursor: pointer; }
+#container .continents .continent.fadeOut text {
+  opacity: 0.2; }
+#container .continents .continent.node--active text {
+  fill: #000;
+  font-weight: 700;
+  font-size: 9px;
+  opacity: 1; }
+#container .continents .continent text {
+  font-size: 9px;
+  fill: #999;
+  letter-spacing: 0.6px;
+  font-weight: 300; }
+  #container .continents .continent text:hover {
+    fill: #000;
+    font-weight: 700; }
+#container .continents .pathContinent {
+  stroke: none;
+  stroke-width: 0px;
+  stroke-opacity: 0;
+  fill: none; }
 #container .node text.label {
   fill: #000;
   opacity: 0; }
@@ -3863,24 +3883,18 @@ svg g:hover {
   opacity: 1; }
 #container .node.node--active circle {
   stroke-opacity: 1; }
-#container .node.show.fadeOut text.label, #container .node.show.node--active.fadeOut text.label {
-  opacity: 0.1; }
-#container .node.show.fadeOut text.labelBg, #container .node.show.node--active.fadeOut text.labelBg {
-  opacity: 0.1; }
-#container .node.show.fadeOut circle, #container .node.show.node--active.fadeOut circle {
-  stroke-opacity: 0.2; }
 #container .node.node--source text, #container .node.show.node--source.fadeOut text {
   fill: #000;
   font-weight: 700;
   font-size: 9px; }
-#container .node.hide text.label, #container .node.hide.show text.label, #container .node.hide.show.fadeOut text.label {
+#container .node.hide text.label, #container .node.hide.show text.label, #container .node.hide.show.fadeOut text.label, #container .node.hide.fadeOut text.label, #container .node.show.fadeOut text.label, #container .node.show.node--active.fadeOut text.label {
   opacity: 0 !important; }
-#container .node.hide text.labelBg, #container .node.hide.show text.labelBg, #container .node.hide.show.fadeOut text.labelBg {
+#container .node.hide text.labelBg, #container .node.hide.show text.labelBg, #container .node.hide.show.fadeOut text.labelBg, #container .node.hide.fadeOut text.labelBg, #container .node.show.fadeOut text.labelBg, #container .node.show.node--active.fadeOut text.labelBg {
   opacity: 0 !important; }
-#container .node.hide text.label:hover, #container .node.hide text.labelBg:hover, #container .node.hide.show text.label:hover, #container .node.hide.show text.labelBg:hover, #container .node.hide.show.fadeOut text.label:hover, #container .node.hide.show.fadeOut text.labelBg:hover {
+#container .node.hide text.label:hover, #container .node.hide text.labelBg:hover, #container .node.hide.show text.label:hover, #container .node.hide.show text.labelBg:hover, #container .node.hide.show.fadeOut text.label:hover, #container .node.hide.show.fadeOut text.labelBg:hover, #container .node.hide.fadeOut text.label:hover, #container .node.hide.fadeOut text.labelBg:hover, #container .node.show.fadeOut text.label:hover, #container .node.show.fadeOut text.labelBg:hover, #container .node.show.node--active.fadeOut text.label:hover, #container .node.show.node--active.fadeOut text.labelBg:hover {
   opacity: 1 !important; }
-#container .node.hide circle, #container .node.hide.show circle, #container .node.hide.show.fadeOut circle {
-  stroke-opacity: 0.2 !important; }
+#container .node.hide circle, #container .node.hide.show circle, #container .node.hide.show.fadeOut circle, #container .node.hide.fadeOut circle, #container .node.show.fadeOut circle, #container .node.show.node--active.fadeOut circle {
+  stroke-opacity: 0.2; }
 #container .node.node--active.fadeOut text.label {
   opacity: 0; }
 #container .node.node--active.fadeOut text.labelBg {
@@ -3929,19 +3943,6 @@ svg g:hover {
   opacity: 0.1; }
 #container canvas.hide, #container img.hide {
   opacity: 0; }
-#container .continents text {
-  font-size: 9px;
-  fill: #999;
-  letter-spacing: 0.6px;
-  font-weight: 300; }
-  #container .continents text:hover {
-    fill: #000;
-    font-weight: 400; }
-#container .continents .pathContinent {
-  stroke: none;
-  stroke-width: 0px;
-  stroke-opacity: 0;
-  fill: none; }
 
 #sidebar {
   color: #758385; }

@@ -93,11 +93,33 @@ function draw() {
     if(continent[i].key=="OC")  center_text =  "69%";
 
 
+
+
     var cont_ = cont.append('g')
-      .classed('continent_'+continent[i].key,true)
-      .on("mouseover",   function(d) { var t = $(this).attr('class'); var c = t.substring(t.length-2, t.length); if(selectItem == false) { mouseoveredContinent(c, 'hover'); } })
-      .on("mouseout",    function(d) { if(selectItem == false) { resetSelection();   } })
-      .on("click",       function(d) { var t = $(this).attr('class'); var c = t.substring(t.length-2, t.length); mouseClickContinent(c); });
+      .attr('class', 'continent_'+continent[i].key+" continent" )
+      .on("mouseover",   function(d) {
+        nodeHover=true;
+        var t = $(this).attr('class');
+        t = t.split(/[ ]+/);
+        var c = t[0].substring(t[0].length-2, t[0].length);
+        if(selectItem == false) {
+          if($(this).attr('class').indexOf("node--active") < 0) resetSelection();
+          mouseoveredContinent(c, 'hover');
+        }
+      })
+      .on("mouseout",    function(d) {
+        nodeHover=false;
+        setTimeout(function() {
+          if(selectItem == false && nodeHover == false) resetSelection();
+        }, 25);
+      })
+      .on("click",  function(d) {
+        var t = $(this).attr('class'); t = t.split(/[ ]+/);
+        var c = t[0].substring(t[0].length-2, t[0].length);
+        mouseClickContinent(c);
+      });
+
+
 
     var path = cont_.append("path")
       .attr("id", "path"+continent[i].key)

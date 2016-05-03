@@ -36,12 +36,15 @@ function update() {
 
       // check all children after fta ids and add it to array
       var continent_ftas_new   = [];
+      var continent_ftas_total   = [];
 
       // for each ta of this contintent
       e.children.forEach(function(m) {
 
         m.ta_total_arr.forEach(function(n) {
           if(n!=0 && !isInArray(n,ftas_total_arr)) ftas_total_arr.push(n);
+          if(n!=0 && !isInArray(n,continent_ftas_total)) continent_ftas_total.push(n);
+
         });
 
         m.imports.forEach(function(n) {
@@ -56,7 +59,10 @@ function update() {
       // get continent value in array and save fta number
       var found = -1;
       continent.forEach(function(k,i) { if(k.key == e.name) found = i; });
-      if(found != -1) continent[found].ftas_new_arr = continent_ftas_new;
+      if(found != -1) {
+        continent[found].ftas_new_arr = continent_ftas_new;
+        continent[found].ftas_total_arr = continent_ftas_total;
+      }
     }
   });
 
@@ -342,7 +348,7 @@ function canvas_draw_lines(data, id, color, members) {
     }
     // draw everythin at one new canvas
     id = 10;
-    radius_x = radius - d/55;
+    radius_x = radius - radius/50 ; //- d/55
     radius_y = radius + 10;
   };
   //pathspec strings can be taken from the 'd' attribute of an svg path
